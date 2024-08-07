@@ -91,7 +91,7 @@ print(f"{host_name} (v{host_version}) へ接続しました。")
 async def get_speakers():
     return JSONResponse(content=VOICE_DICT)
 
-@app.post("/synthesis")
+@app.post("/audio_query")
 async def synthesis(text: str, speaker: int):
     print(tts_control.Status)
     while tts_control.Status != HostStatus.Idle:
