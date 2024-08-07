@@ -45,7 +45,7 @@ VOICE_DICT = [
 VOICE_DICT_FOR_GEN = {}
 for voice in VOICE_DICT:
     for style in voice["styles"]:
-        VOICE_DICT_FOR_GEN[id] = style["raw_name"]
+        VOICE_DICT_FOR_GEN[style["id"]] = style["raw_name"]
 
 
 COUNTER = 0
