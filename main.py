@@ -97,7 +97,7 @@ async def synthesis(text: str, speaker: int):
     while tts_control.Status != HostStatus.Idle:
         await asyncio.sleep(0.1)
     tts_control.Text = text
-    tts_control.CurrentVoicePresetName = VOICE_DICT[speaker]
+    tts_control.CurrentVoicePresetName = VOICE_DICT_FOR_GEN[speaker]
     #play_time = tts_control.GetPlayTime()
     #tts_control.Play()
     global COUNTER
