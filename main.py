@@ -94,9 +94,9 @@ async def get_speakers():
 @app.post("/audio_query")
 async def synthesis(text: str, speaker: int):
     print(tts_control.Status)
-    if tts_control.Status == HostStatus.NotConnected:
-        tts_control.Connect()
     while tts_control.Status != HostStatus.Idle:
+        if tts_control.Status == HostStatus.NotConnected:
+            tts_control.Connect()
         await asyncio.sleep(0.1)
     tts_control.Text = text
     tts_control.CurrentVoicePresetName = VOICE_DICT_FOR_GEN[speaker]
