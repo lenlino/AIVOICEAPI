@@ -140,14 +140,9 @@ async def starttask():
     global COUNTER
     file_path = os.path.dirname(os.path.abspath(__file__)) + f"/audio/text{COUNTER}.wav"
     texts = ""
-    if len(audio_queue) == 1:
-        for i in range(len(audio_queue)):
-            texts += f"{audio_queue[i]}\n"
-            audio_queue_result[i] = file_path
-    else:
-        for i in range(len(audio_queue)):
-            texts += f"{audio_queue[i]}\n"
-            audio_queue_result[i] = file_path.replace(f"text{COUNTER}.wav", f"text{COUNTER}-{i}.wav")
+    for i in range(len(audio_queue)):
+        texts += f"{audio_queue[i]}\n"
+        audio_queue_result[i] = file_path.replace(f"text{COUNTER}.wav", f"text{COUNTER}-{i}.wav")
     tts_control.Text = texts
     audio_queue.clear()
     tts_control.SaveAudioToFile(file_path)
