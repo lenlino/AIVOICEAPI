@@ -122,8 +122,13 @@ async def synthesis(text: str, speaker: int):
 async def skd_process():
     scheduler = AsyncIOScheduler()
     scheduler.add_job(starttask, "interval", seconds=1)
+    scheduler.add_job(restart_task, "interval", hours=24)
     scheduler.start()
 
+
+async def restart_task():
+    tts_control.TerminateHost()
+    tts_control.StartHost()
 
 async def starttask():
     print(len(audio_queue))
