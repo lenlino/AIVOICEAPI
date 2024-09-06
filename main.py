@@ -122,7 +122,7 @@ async def synthesis(text: str, speaker: int):
 async def skd_process():
     scheduler = AsyncIOScheduler()
     scheduler.add_job(starttask, "interval", seconds=1)
-    scheduler.add_job(restart_task, "interval", hours=24)
+    #scheduler.add_job(restart_task, "interval", hours=24)
     scheduler.start()
 
 
