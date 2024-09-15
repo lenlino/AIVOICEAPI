@@ -65,19 +65,8 @@ clr.AddReference(_editor_dir + "AI.Talk.Editor.Api")
 from AI.Talk.Editor.Api import TtsControl, HostStatus
 
 tts_control = TtsControl()
-
-# A.I.VOICE Editor APIの初期化
 host_name = tts_control.GetAvailableHostNames()[0]
 tts_control.Initialize(host_name)
-
-# A.I.VOICE Editorの起動
-if tts_control.Status == HostStatus.NotRunning:
-    tts_control.StartHost()
-
-# A.I.VOICE Editorへ接続
-tts_control.Connect()
-host_version = tts_control.Version
-print(f"{host_name} (v{host_version}) へ接続しました。")
 
 audio_queue = []
 audio_queue_result = {}
@@ -122,13 +111,22 @@ async def synthesis(text: str, speaker: int):
 async def skd_process():
     scheduler = AsyncIOScheduler()
     scheduler.add_job(starttask, "interval", seconds=1)
-    #scheduler.add_job(restart_task, "interval", hours=24)
+    scheduler.add_job(restart_task, "interval", hours=24)
     scheduler.start()
 
 
 async def restart_task():
-    tts_control.TerminateHost()
-    tts_control.StartHost()
+    # A.I.VOICE Editor APIの初期化
+    # A.I.VOICE Editorの起動
+    if tts_control.Status == HostStatus.NotRunning:
+        tts_control.StartHost()
+    else:
+        tts_control.Finalize()
+    # A.I.VOICE Editorへ接続
+    tts_control.Connect()
+
+    host_version = tts_control.Version
+    print(f"{host_name} (v{host_version}) へ接続しました。")
 
 async def starttask():
     print(len(audio_queue))
