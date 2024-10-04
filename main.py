@@ -12,6 +12,7 @@ import time
 from fastapi import Body, FastAPI, HTTPException
 from fastapi.responses import FileResponse, Response
 from starlette.responses import JSONResponse
+import pyautogui
 
 VOICE_DICT = [
     {
@@ -113,6 +114,7 @@ async def skd_process():
     scheduler.add_job(starttask, "interval", seconds=1)
     scheduler.add_job(restart_task, "interval", hours=24)
     scheduler.start()
+    await restart_task()
 
 
 async def restart_task():
@@ -121,7 +123,11 @@ async def restart_task():
     if tts_control.Status == HostStatus.NotRunning:
         tts_control.StartHost()
     else:
-        tts_control.Finalize()
+        tts_control.TerminateHost()
+        pyautogui.hotkey("shift", "y")
+        tts_control.StartHost()
+
+    tts_control.Initialize(host_name)
     # A.I.VOICE Editorへ接続
     tts_control.Connect()
 
