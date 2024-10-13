@@ -124,6 +124,7 @@ async def restart_task():
         tts_control.StartHost()
     else:
         tts_control.TerminateHost()
+        await asyncio.sleep(5)
         pyautogui.hotkey("shift", "y")
         tts_control.StartHost()
 
