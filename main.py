@@ -13,6 +13,7 @@ from fastapi import Body, FastAPI, HTTPException
 from fastapi.responses import FileResponse, Response
 from starlette.responses import JSONResponse
 import pyautogui
+import subprocess
 
 VOICE_DICT = [
     {
@@ -124,8 +125,17 @@ async def restart_task():
         tts_control.StartHost()
     else:
         tts_control.TerminateHost()
-        await asyncio.sleep(5)
-        pyautogui.hotkey("shift", "y")
+        proc = subprocess.Popen('tasklist', shell=True, stdout=subprocess.PIPE)
+        for line in proc.stdout:
+
+            # バイト列を文字列に変換して、空白で分割する
+            parts = line.decode('shift-jis').split()
+
+            # プロセス名が「Notepad.exe」または「Screenpresso.exe」だったら、プロセスIDを取得して終了
+            if 'AIVoiceEditor.exe' in parts:
+                pid = int(parts[1])
+                subprocess.call(['taskkill', '/F', '/PID', str(pid)])
+
         tts_control.StartHost()
 
     tts_control.Initialize(host_name)
