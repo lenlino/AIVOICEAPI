@@ -124,7 +124,6 @@ async def restart_task():
     if tts_control.Status == HostStatus.NotRunning:
         tts_control.StartHost()
     else:
-        tts_control.TerminateHost()
         proc = subprocess.Popen('tasklist', shell=True, stdout=subprocess.PIPE)
         for line in proc.stdout:
 
@@ -136,6 +135,7 @@ async def restart_task():
                 pid = int(parts[1])
                 subprocess.call(['taskkill', '/F', '/PID', str(pid)])
 
+        await asyncio.sleep(5)
         tts_control.StartHost()
 
     tts_control.Initialize(host_name)
