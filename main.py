@@ -90,7 +90,6 @@ async def get_speakers():
 
 @app.post("/audio_query")
 async def synthesis(text: str, speaker: int):
-    print("a")
     #tts_control.CurrentVoicePresetName = VOICE_DICT_FOR_GEN[speaker]
     #play_time = tts_control.GetPlayTime()
     #tts_control.Play()
@@ -112,7 +111,7 @@ async def synthesis(text: str, speaker: int):
 @app.on_event("startup")
 async def skd_process():
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(starttask, "interval", seconds=1)
+    scheduler.add_job(starttask, "interval", seconds=0.1)
     scheduler.add_job(restart_task, "interval", hours=24)
     scheduler.start()
     await restart_task()
@@ -146,9 +145,9 @@ async def restart_task():
     print(f"{host_name} (v{host_version}) へ接続しました。")
 
 async def starttask():
-    print(len(audio_queue))
     if len(audio_queue) == 0:
         return
+    print(len(audio_queue))
     if len(audio_queue_result) > 0:
         return
     while tts_control.Status != HostStatus.Idle:
