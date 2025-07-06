@@ -94,6 +94,8 @@ async def synthesis(text: str, speaker: int):
     #play_time = tts_control.GetPlayTime()
     #tts_control.Play()
     print(audio_queue)
+    if text == "":
+        return None
     queue_index = len(audio_queue)
     audio_queue.append(f"{VOICE_DICT_FOR_GEN[speaker]}＞{text}")
 
