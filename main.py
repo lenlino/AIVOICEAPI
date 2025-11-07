@@ -1,5 +1,6 @@
 import asyncio
 import os
+import shutil
 import wave
 from contextlib import asynccontextmanager
 
@@ -105,9 +106,14 @@ async def synthesis(text: str, speaker: int):
     while COUNTER == counter_temp:
         await asyncio.sleep(0.1)
     wav_file_path = audio_queue_result.pop(queue_index)
-    async with aiofiles.open(wav_file_path, mode='rb') as f:
-        data: bytes = await f.read()
-        return Response(data, media_type="audio/wav")
+    while not os.path.isfile(wav_file_path):
+        await asyncio.sleep(0.1)
+    try:
+        async with aiofiles.open(wav_file_path, mode='rb') as f:
+            data: bytes = await f.read()
+            return Response(data, media_type="audio/wav")
+    finally:
+        os.remove(wav_file_path)
 
 
 @app.on_event("startup")
@@ -123,6 +129,7 @@ async def restart_task():
     # A.I.VOICE Editor APIの初期化
     # A.I.VOICE Editorの起動
     if tts_control.Status == HostStatus.NotRunning:
+        shutil.rmtree(os.path.dirname(os.path.abspath(__file__)) + f"/audio/")
         tts_control.StartHost()
     else:
         proc = subprocess.Popen('tasklist', shell=True, stdout=subprocess.PIPE)
@@ -137,6 +144,7 @@ async def restart_task():
                 subprocess.call(['taskkill', '/F', '/PID', str(pid)])
 
         await asyncio.sleep(5)
+        shutil.rmtree(os.path.dirname(os.path.abspath(__file__)) + f"/audio/")
         tts_control.StartHost()
 
     tts_control.Initialize(host_name)
@@ -166,7 +174,7 @@ async def starttask():
         audio_queue_result[i] = file_path.replace(f"text{COUNTER}.wav", f"text{COUNTER}-{i}.wav")
     tts_control.Text = texts
     audio_queue.clear()
-    tts_control.SaveAudioToFile(file_path)
     COUNTER += 1
     if COUNTER > 100:
         COUNTER = 0
+    tts_control.SaveAudioToFile(file_path)
